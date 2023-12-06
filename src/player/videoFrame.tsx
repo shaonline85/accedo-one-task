@@ -1,3 +1,5 @@
+import { forwardRef, useEffect } from "react";
+
 interface VidoComponentProps {
 	ref: any;
 	isPlaying: boolean;
@@ -5,14 +7,17 @@ interface VidoComponentProps {
 	src: string;
 }
 
-import { forwardRef } from "react";
-
 const VideoFrame = forwardRef(function VideoPlayer(
 	{ isPlaying, onClick, src }: VidoComponentProps,
 	ref
 ) {
+	useEffect(() => {
+		ref.current?.load();
+		console.log("yap");
+	}, [src]);
+
 	return (
-		<video key={src} ref={ref} autoPlay={isPlaying} onClick={onClick}>
+		<video ref={ref} autoPlay={isPlaying} onClick={onClick}>
 			<source src={src} type="video/mp4" />
 		</video>
 	);
