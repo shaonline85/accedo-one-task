@@ -1,27 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import data from "./mockData";
-
-import nextSVG from "../assets/next.svg";
-import previousSVG from "../assets/previous.svg";
-import playSVG from "../assets/play.svg";
-import pauseSVG from "../assets/pause.svg";
-import backwardSVG from "../assets/backward.svg";
-import forwardSVG from "../assets/forward.svg";
-import trashSVG from "../assets/trash.svg";
-
-interface Media {
-	id: number;
-	url: string;
-}
+import { Media } from "../types/index";
+import PlayList from "./playList";
+import UrlInput from "./urlInput";
+import VideoFrame from "./videoFrame";
+import VidoeControls from "./mediaControls";
 
 const MediaPlayer: React.FC = () => {
 	const [playlist, setPlaylist] = useState<Media[]>(data);
 	const [currentMediaIndex, setCurrentMediaIndex] = useState<number>(0);
-
+	const [videoUrl, setVideoUrl] = useState(playlist[currentMediaIndex].url);
+	const [videoKey, setVideoKey] = useState(playlist[currentMediaIndex].id);
 	const [isPlaying, setIsPlaying] = useState<boolean>(false);
 	const [newUrl, setNewUrl] = useState<string>("");
 
-	const videoRef = useRef<HTMLVideoElement>(null);
+	let videoRef = useRef<HTMLVideoElement>(null);
 
 	const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setNewUrl(event.target.value);
@@ -36,6 +29,17 @@ const MediaPlayer: React.FC = () => {
 	};
 
 	const handleRemoveMedia = (id: number) => {
+		console.log("id", id);
+		console.log("currentMediaIndex", currentMediaIndex);
+		// Need to fix
+		// if (id - 1 === currentMediaIndex) {
+		// 	setCurrentMediaIndex((currIndex) =>
+		// 		currIndex + 1 > playlist.length - 1
+		// 			? playlist.length - 1
+		// 			: currIndex + 1
+		// 	);
+		// }
+
 		setPlaylist((currList) => currList.filter((obj) => obj.id !== id));
 	};
 
@@ -44,6 +48,7 @@ const MediaPlayer: React.FC = () => {
 			const newIndex = currIndex + 1;
 			return newIndex > playlist.length - 1 ? 0 : newIndex;
 		});
+		//setVideoUrl(playlist[currentMediaIndex].url);
 	};
 
 	const handlePrevious = () => {
@@ -51,6 +56,7 @@ const MediaPlayer: React.FC = () => {
 			const newIndex = currIndex - 1;
 			return newIndex < 0 ? playlist.length - 1 : newIndex;
 		});
+		//setVideoUrl(playlist[currentMediaIndex].url);
 	};
 
 	const handleFastForward = () => {
@@ -76,7 +82,10 @@ const MediaPlayer: React.FC = () => {
 		}
 	};
 
-	useEffect(() => {}, [currentMediaIndex, playlist]);
+	useEffect(() => {
+		setVideoUrl(playlist[currentMediaIndex].url);
+		setVideoKey(playlist[currentMediaIndex].id);
+	}, [currentMediaIndex, playlist]);
 
 	return (
 		<>
@@ -84,70 +93,34 @@ const MediaPlayer: React.FC = () => {
 				<>
 					<div className="media-player">
 						<div className="playlist">
-							{playlist.map((media, index) => {
-								return (
-									<div key={media.id}>
-										{index === currentMediaIndex ? (
-											<strong>{media.url}</strong>
-										) : (
-											<span>{media.url}</span>
-										)}
-
-										<button
-											onClick={() => handleRemoveMedia(media.id)}
-											className="noStyleButton"
-										>
-											<img src={trashSVG} />
-										</button>
-									</div>
-								);
-							})}
+							<PlayList
+								list={playlist}
+								onRemove={handleRemoveMedia}
+								activeIndex={currentMediaIndex}
+							/>
 						</div>
-						<input
-							type="text"
-							value={newUrl}
+						<UrlInput
+							onAddUrl={handleAddMedia}
 							onChange={handleUrlChange}
-							onKeyPress={(event) => {
-								if (event.key === "Enter") {
-									handleAddMedia();
-								}
-							}}
-							style={{ width: "500px", height: "30px", marginBottom: "10px" }}
+							value={newUrl}
 						/>
-						<button onClick={handleAddMedia}>Submit</button>
-						<div className="video-player">
-							<video
-								key={playlist[currentMediaIndex].id}
-								ref={videoRef}
-								autoPlay={isPlaying ? true : false}
-								onClick={handlePlayPause}
-							>
-								{playlist.length > 0 &&
-									currentMediaIndex >= 0 &&
-									currentMediaIndex < playlist.length && (
-										<source
-											src={playlist[currentMediaIndex].url}
-											type="video/mp4"
-										/>
-									)}
-							</video>
 
-							<button onClick={handlePrevious}>
-								<img src={previousSVG} />
-							</button>
-							<button onClick={handleRewind}>
-								<img src={backwardSVG} />
-							</button>
-							<button onClick={handlePlayPause}>
-								{isPlaying ? <img src={pauseSVG} /> : <img src={playSVG} />}
-							</button>
-							<button onClick={handleFastForward}>
-								<img src={forwardSVG} />
-							</button>
-							<button onClick={handleNext}>
-								<img src={nextSVG} />
-							</button>
-						</div>
+						{videoUrl && (
+							<VideoFrame
+								ref={videoRef}
+								onClick={handlePlayPause}
+								isPlaying={isPlaying}
+								src={videoUrl}
+							/>
+						)}
+						<VidoeControls
+							onBackward={handleRewind}
+							onForward={handleFastForward}
+							onPlayPause={handlePlayPause}
+							onPrevious={handlePrevious}
+							isPlaying={isPlaying}
+							onNext={handleNext}
+						/>
 					</div>
 				</>
 			) : (
