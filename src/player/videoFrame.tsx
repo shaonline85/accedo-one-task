@@ -1,28 +1,45 @@
-import { forwardRef, useState, useEffect } from "react";
+import { forwardRef, useState, useEffect, ForwardedRef } from "react";
 
-interface VidoComponentProps {
+type VidoComponentProps = {
 	isPlaying: boolean;
 	onClick: () => void;
 	source: string;
-}
+};
 
 const VideoFrame = forwardRef(function VideoPlayer(
 	{ isPlaying, onClick, source }: VidoComponentProps,
-	ref
+	ref: ForwardedRef<HTMLVideoElement | null>
 ) {
-	const [videoSrc, setVideoSrc] = useState(source);
+	const [isLoading, setIsLoading] = useState(true);
+	let forwardedRef = ref;
+
+	function handleLoading() {
+		setIsLoading(false);
+	}
 
 	useEffect(() => {
-		//ref.current?.load();
-		//ref.current.src = source;
-		setVideoSrc(source);
-		console.log("called with new url: ", source);
+		if (forwardedRef) {
+			forwardedRef.current.src = source;
+			if (isPlaying) forwardedRef.current.play();
+		}
 	}, [source]);
 
 	return (
-		<video ref={ref} autoPlay={isPlaying} onClick={onClick}>
-			<source src={videoSrc} type="video/mp4" />
-		</video>
+		<>
+			{!isLoading ? (
+				<video
+					ref={forwardedRef}
+					onClick={onClick}
+					onLoadedData={handleLoading}
+				>
+					<source src={source} type="video/mp4" />
+				</video>
+			) : (
+				<video ref={ref} className="skeleton" onClick={onClick}>
+					<source src={source} type="video/mp4" />
+				</video>
+			)}
+		</>
 	);
 });
 

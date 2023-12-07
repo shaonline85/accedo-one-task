@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import data from "./mockData";
 import { Media } from "../types/index";
 import PlayList from "./playList";
@@ -23,7 +23,7 @@ const MediaPlayer: React.FC = () => {
 
 	const handleAddMedia = () => {
 		if (newUrl.trim() !== "") {
-			const id = playlist.length + 1;
+			const id = Math.floor(Math.random() * 900) + 100;
 			setPlaylist((currList) => [...currList, { id, url: newUrl }]);
 			setNewUrl("");
 		}
@@ -35,8 +35,9 @@ const MediaPlayer: React.FC = () => {
 
 	const handleNext = () => {
 		const currIndex = +currentMediaIndex;
-		let newIndex = +currIndex + 1;
+		let newIndex = currIndex + 1;
 		newIndex = newIndex > playlist.length - 1 ? 0 : newIndex;
+
 		setSearchParams(
 			(prev) => {
 				prev.set("i", newIndex.toString());
@@ -79,43 +80,47 @@ const MediaPlayer: React.FC = () => {
 		}
 	};
 
-	useEffect(() => {}, [searchParams]);
+	const moveIndex = () => {
+		if (!playlist[+currentMediaIndex]?.url) handleNext();
+	};
+
+	useEffect(() => {
+		moveIndex();
+	}, [searchParams, playlist]);
 
 	return (
 		<>
 			{playlist.length > 0 ? (
-				<>
-					<div className="">
-						<div className="">
-							<PlayList
-								list={playlist}
-								onRemove={handleRemoveMedia}
-								activeIndex={+currentMediaIndex}
-							/>
-						</div>
-						<UrlInput
-							onAddUrl={handleAddMedia}
-							onChange={handleUrlChange}
-							value={newUrl}
-						/>
-
-						<VideoFrame
-							ref={videoRef}
-							onClick={handlePlayPause}
-							isPlaying={isPlaying}
-							source={playlist[+currentMediaIndex].url}
-						/>
-
-						<VidoeControls
-							onBackward={handleRewind}
-							onForward={handleFastForward}
-							onPlayPause={handlePlayPause}
-							onPrevious={handlePrevious}
-							isPlaying={isPlaying}
-							onNext={handleNext}
+				<div className="container">
+					<div className="mediaplayer">
+						<PlayList
+							list={playlist}
+							onRemove={handleRemoveMedia}
+							activeIndex={+currentMediaIndex}
 						/>
 					</div>
-				</>
+					<UrlInput
+						onAddUrl={handleAddMedia}
+						onChange={handleUrlChange}
+						value={newUrl}
+					/>
+
+					<VideoFrame
+						ref={videoRef as React.RefObject<HTMLVideoElement>}
+						onClick={handlePlayPause}
+						isPlaying={isPlaying}
+						source={playlist[+currentMediaIndex]?.url}
+					/>
+
+					<VidoeControls
+						onBackward={handleRewind}
+						onForward={handleFastForward}
+						onPlayPause={handlePlayPause}
+						onPrevious={handlePrevious}
+						isPlaying={isPlaying}
+						onNext={handleNext}
+					/>
+				</div>
 			) : (
 				<>no playslist</>
 			)}

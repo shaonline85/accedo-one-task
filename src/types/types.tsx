@@ -1,4 +1,4 @@
-export interface Media {
+export type Media = {
 	id: number;
 	url: string;
-}
+};

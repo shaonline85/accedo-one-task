@@ -15,7 +15,7 @@ const UrlInput = ({ value, onChange, onAddUrl }: UrlInputProps) => {
 						onAddUrl();
 					}
 				}}
-				style={{ width: "500px", height: "30px", marginBottom: "10px" }}
+				className="urlInput"
 			/>
 			<button onClick={onAddUrl}>Add url</button>
 		</>
