@@ -10,35 +10,59 @@ const VideoFrame = forwardRef(function VideoPlayer(
 	{ isPlaying, onClick, source }: VidoComponentProps,
 	ref: ForwardedRef<HTMLVideoElement | null>
 ) {
-	const [isLoading, setIsLoading] = useState(true);
-	let forwardedRef = ref;
+	const [currentTime, setCurrentTime] = useState(0);
+	const [duration, setDuration] = useState(0);
+	const [progress, setProgress] = useState(0);
 
-	function handleLoading() {
-		setIsLoading(false);
-	}
+	const updateProgress = () => {
+		if (ref && ref.current) {
+			const video = ref.current;
+			const currentTime = video.currentTime;
+			const duration = video.duration;
+			const progress = (currentTime / duration) * 100;
+			setCurrentTime(currentTime);
+			setDuration(duration);
+			setProgress(progress);
+		}
+	};
+
+	const seekTo = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+		e.stopPropagation();
+		if (ref && ref.current) {
+			const video = ref.current;
+			const seekTime =
+				(e.nativeEvent.offsetX / e.currentTarget.offsetWidth) * video.duration;
+			video.currentTime = seekTime;
+		}
+	};
 
 	useEffect(() => {
-		if (forwardedRef) {
-			forwardedRef.current.src = source;
-			if (isPlaying) forwardedRef.current.play();
+		const video = ref?.current;
+		if (video) {
+			video.src = source;
+			if (isPlaying) {
+				video.play();
+			}
 		}
-	}, [source]);
+	}, [source, ref]);
+
+	useEffect(() => {
+		const video = ref?.current;
+		updateProgress();
+	}, [currentTime, duration]);
 
 	return (
 		<>
-			{!isLoading ? (
+			<div className="skeleton" onClick={onClick}>
 				<video
-					ref={forwardedRef}
+					ref={ref}
 					onClick={onClick}
-					onLoadedData={handleLoading}
-				>
-					<source src={source} type="video/mp4" />
-				</video>
-			) : (
-				<video ref={ref} className="skeleton" onClick={onClick}>
-					<source src={source} type="video/mp4" />
-				</video>
-			)}
+					onTimeUpdate={updateProgress}
+				></video>
+				<div className="progress" onClick={seekTo}>
+					<div className="progress-bar" style={{ width: `${progress}%` }} />
+				</div>
+			</div>
 		</>
 	);
 });

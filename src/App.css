@@ -17,10 +17,13 @@
 }
 
 .skeleton {
-	height: 700px;
-	width: 1240px;
+	position: relative;
+	height: 720px;
+	width: 1280px;
 	max-width: 1280px;
 	background-color: black;
+	border: 1px solid gray;
+	margin-bottom: 10px;
 }
 
 .urlInput {
@@ -36,4 +39,21 @@
 .row {
 	display: flex;
 	justify-content: space-between;
+}
+
+.progress {
+	position: absolute;
+	bottom: 50px;
+	left: 0;
+	width: 100%;
+	height: 4px;
+	background-color: #ccc;
+	cursor: pointer;
+}
+
+.progress-bar {
+	width: 0;
+	height: 100%;
+	background-color: red;
+	transition: width 0.1s ease-in-out;
 }

@@ -1,4 +1,3 @@
-import React from "react";
 import { Media } from "../types/index";
 import trashSVG from "../assets/trash.svg";
 
@@ -14,8 +13,8 @@ const PlayList = ({ list, activeIndex, onRemove }: listProps) => {
 			<div className="playlist">
 				{list.map((media, index) => {
 					return (
-						<div className="row">
-							<div key={media.id}>
+						<div className="row" key={media.id}>
+							<div>
 								{index === activeIndex ? (
 									<strong>{media.url}</strong>
 								) : (

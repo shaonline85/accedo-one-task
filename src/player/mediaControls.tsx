@@ -12,6 +12,7 @@ type controlsProps = {
 	onForward: () => void;
 	onBackward: () => void;
 	isPlaying: boolean;
+	isDisabled?: boolean;
 };
 
 const MediaControls = ({
@@ -21,10 +22,11 @@ const MediaControls = ({
 	onForward,
 	onNext,
 	isPlaying,
+	isDisabled,
 }: controlsProps) => {
 	return (
-		<div className="video-player">
-			<button onClick={onPrevious}>
+		<div className="videoControls">
+			<button onClick={onPrevious} disabled={isDisabled}>
 				<img src={previousSVG} />
 			</button>
 			<button onClick={onBackward}>
@@ -36,7 +38,7 @@ const MediaControls = ({
 			<button onClick={onForward}>
 				<img src={forwardSVG} />
 			</button>
-			<button onClick={onNext}>
+			<button onClick={onNext} disabled={isDisabled}>
 				<img src={nextSVG} />
 			</button>
 		</div>

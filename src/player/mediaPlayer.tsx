@@ -71,11 +71,9 @@ const MediaPlayer: React.FC = () => {
 
 	const handlePlayPause = () => {
 		if (videoRef.current) {
-			if (isPlaying) {
-				videoRef.current.pause();
-			} else {
-				videoRef.current.play();
-			}
+			if (isPlaying) videoRef.current.pause();
+			else videoRef.current.play();
+
 			setIsPlaying(!isPlaying);
 		}
 	};
@@ -119,6 +117,7 @@ const MediaPlayer: React.FC = () => {
 						onPrevious={handlePrevious}
 						isPlaying={isPlaying}
 						onNext={handleNext}
+						isDisabled={playlist.length < 2}
 					/>
 				</div>
 			) : (
