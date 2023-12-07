@@ -1,24 +1,27 @@
-import { forwardRef, useEffect } from "react";
+import { forwardRef, useState, useEffect } from "react";
 
 interface VidoComponentProps {
-	ref: any;
 	isPlaying: boolean;
 	onClick: () => void;
-	src: string;
+	source: string;
 }
 
 const VideoFrame = forwardRef(function VideoPlayer(
-	{ isPlaying, onClick, src }: VidoComponentProps,
+	{ isPlaying, onClick, source }: VidoComponentProps,
 	ref
 ) {
+	const [videoSrc, setVideoSrc] = useState(source);
+
 	useEffect(() => {
-		ref.current?.load();
-		console.log("yap");
-	}, [src]);
+		//ref.current?.load();
+		//ref.current.src = source;
+		setVideoSrc(source);
+		console.log("called with new url: ", source);
+	}, [source]);
 
 	return (
 		<video ref={ref} autoPlay={isPlaying} onClick={onClick}>
-			<source src={src} type="video/mp4" />
+			<source src={videoSrc} type="video/mp4" />
 		</video>
 	);
 });

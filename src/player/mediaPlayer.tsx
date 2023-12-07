@@ -9,9 +9,6 @@ import { useSearchParams } from "react-router-dom";
 
 const MediaPlayer: React.FC = () => {
 	const [playlist, setPlaylist] = useState<Media[]>(data);
-	//const [currentMediaIndex, setCurrentMediaIndex] = useState<number>(0);
-	//const [videoUrl, setVideoUrl] = useState(playlist[currentMediaIndex].url);
-	//const [videoKey, setVideoKey] = useState(playlist[currentMediaIndex].id);
 	const [isPlaying, setIsPlaying] = useState<boolean>(false);
 	const [newUrl, setNewUrl] = useState<string>("");
 	const [searchParams, setSearchParams] = useSearchParams({ i: "0" });
@@ -33,17 +30,6 @@ const MediaPlayer: React.FC = () => {
 	};
 
 	const handleRemoveMedia = (id: number) => {
-		console.log("id", id);
-		//console.log("currentMediaIndex", currentMediaIndex);
-		// Need to fix
-		// if (id - 1 === currentMediaIndex) {
-		// 	setCurrentMediaIndex((currIndex) =>
-		// 		currIndex + 1 > playlist.length - 1
-		// 			? playlist.length - 1
-		// 			: currIndex + 1
-		// 	);
-		// }
-
 		setPlaylist((currList) => currList.filter((obj) => obj.id !== id));
 	};
 
@@ -51,11 +37,6 @@ const MediaPlayer: React.FC = () => {
 		const currIndex = +currentMediaIndex;
 		let newIndex = +currIndex + 1;
 		newIndex = newIndex > playlist.length - 1 ? 0 : newIndex;
-		// setCurrentMediaIndex((currIndex) => {
-		// 	const newIndex = currIndex + 1;
-		// 	return newIndex > playlist.length - 1 ? 0 : newIndex;
-		// });
-		//setVideoUrl(playlist[currentMediaIndex].url);
 		setSearchParams(
 			(prev) => {
 				prev.set("i", newIndex.toString());
@@ -73,12 +54,6 @@ const MediaPlayer: React.FC = () => {
 			prev.set("i", newIndex.toString());
 			return prev;
 		});
-
-		// setCurrentMediaIndex((currIndex) => {
-		// 	const newIndex = currIndex - 1;
-		// 	return newIndex < 0 ? playlist.length - 1 : newIndex;
-		// });
-		//setVideoUrl(playlist[currentMediaIndex].url);
 	};
 
 	const handleFastForward = () => {
@@ -104,12 +79,8 @@ const MediaPlayer: React.FC = () => {
 		}
 	};
 
-	// useEffect(() => {
-	// 	setVideoUrl(playlist[currentMediaIndex].url);
-	// 	setVideoKey(playlist[currentMediaIndex].id);
-	// }, [currentMediaIndex, playlist]);
-
 	useEffect(() => {}, [searchParams]);
+
 	return (
 		<>
 			{playlist.length > 0 ? (
@@ -132,7 +103,7 @@ const MediaPlayer: React.FC = () => {
 							ref={videoRef}
 							onClick={handlePlayPause}
 							isPlaying={isPlaying}
-							src={playlist[+currentMediaIndex].url}
+							source={playlist[+currentMediaIndex].url}
 						/>
 
 						<VidoeControls
