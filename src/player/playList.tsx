@@ -11,26 +11,29 @@ type listProps = {
 const PlayList = ({ list, activeIndex, onRemove }: listProps) => {
 	{
 		return (
-			<>
+			<div className="playlist">
 				{list.map((media, index) => {
 					return (
-						<div key={media.id}>
-							{index === activeIndex ? (
-								<strong>{media.url}</strong>
-							) : (
-								<span>{media.url}</span>
-							)}
-
-							<button
-								onClick={() => onRemove(media.id)}
-								className="noStyleButton"
-							>
-								<img src={trashSVG} />
-							</button>
+						<div className="row">
+							<div key={media.id}>
+								{index === activeIndex ? (
+									<strong>{media.url}</strong>
+								) : (
+									<span>{media.url}</span>
+								)}
+							</div>
+							<div>
+								<button
+									onClick={() => onRemove(media.id)}
+									className="noStyleButton"
+								>
+									<img src={trashSVG} />
+								</button>
+							</div>
 						</div>
 					);
 				})}
-			</>
+			</div>
 		);
 	}
 };
